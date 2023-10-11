@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  postgres:
+    image: postgres:16.0-alpine
+    ports:
+      - ${DATABASE_PORT}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+
+  maildev:
+    image: maildev/maildev:latest
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+  redis:
+    image: redis:7.2.1-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      target: dev
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    env_file: .env
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - mysql
+      - redis
+      - maildev
+
+volumes:
+  db-data:

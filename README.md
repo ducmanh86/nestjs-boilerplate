@@ -1,7 +1,4 @@
-# NestJS REST API boilerplate 🇺🇦
-
-![github action status](https://github.com/brocoders/nestjs-boilerplate/actions/workflows/docker-e2e.yml/badge.svg)
-[![renovate](https://img.shields.io/badge/renovate-enabled-%231A1F6C?logo=renovatebot)](https://app.renovatebot.com/dashboard)
+# NestJS REST API boilerplate
 
 ## Description <!-- omit in toc -->
 
@@ -40,7 +37,7 @@ NestJS REST API boilerplate for typical project
 ## Quick run
 
 ```bash
-git clone --depth 1 https://github.com/brocoders/nestjs-boilerplate.git my-app
+git clone --depth 1 git@github.com:ducmanh86/nestjs-boilerplate.git my-app
 cd my-app/
 cp env-example .env
 docker compose up -d
@@ -55,7 +52,7 @@ docker compose logs
 ## Comfortable development
 
 ```bash
-git clone --depth 1 https://github.com/brocoders/nestjs-boilerplate.git my-app
+git clone --depth 1 git@github.com:ducmanh86/nestjs-boilerplate.git my-app
 cd my-app/
 cp env-example .env
 ```

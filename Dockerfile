@@ -1,22 +1,63 @@
-FROM node:18.18.0-alpine
+FROM oraclelinux:8 AS base
 
-RUN apk add --no-cache bash
+RUN dnf module enable nodejs:16 && \
+    dnf module install nodejs
+
+RUN dnf install git oracle-instantclient-release-el8 oraclelinux-developer-release-el8 && \
+    dnf install node-oracledb-node16
+
+RUN dnf clean all && \
+    rm -rf /var/cache/dnf && \
+    export NODE_PATH=$(npm root -g)
+
 RUN npm i -g @nestjs/cli typescript ts-node
 
-COPY package*.json /tmp/app/
-RUN cd /tmp/app && npm install
 
-COPY . /usr/src/app
-RUN cp -a /tmp/app/node_modules /usr/src/app
-COPY ./wait-for-it.sh /opt/wait-for-it.sh
-RUN chmod +x /opt/wait-for-it.sh
-COPY ./startup.dev.sh /opt/startup.dev.sh
-RUN chmod +x /opt/startup.dev.sh
-RUN sed -i 's/\r//g' /opt/wait-for-it.sh
-RUN sed -i 's/\r//g' /opt/startup.dev.sh
 
-WORKDIR /usr/src/app
-RUN if [ ! -f .env ]; then cp env-example .env; fi
-RUN npm run build
+FROM base AS install
 
-CMD ["/opt/startup.dev.sh"]
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm pkg delete scripts.prepare
+
+# using --force to force install package oracledb 6.x.x
+RUN npm ci --force
+
+
+
+FROM install AS dev
+
+WORKDIR /app
+
+COPY tsconfig.json ./
+
+ENTRYPOINT [ "npm" ]
+CMD ["run", "start:dev"]
+
+
+
+FROM install AS build
+
+WORKDIR /app
+
+COPY . .
+
+# build js & remove devDependencies from node_modules
+RUN npm run build && npm prune --omit=dev --force
+
+# Migrations compiled while npm run build was call
+RUN rm -rf /app/dist/migrations/*.d.ts /app/dist/migrations/*.map
+
+
+
+FROM base AS prod
+
+WORKDIR /app
+
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
+
+ENTRYPOINT [ "node" ]
+CMD [ "dist/main.js" ]

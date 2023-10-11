@@ -19,7 +19,6 @@ lerna-debug.log*
 /.nyc_output
 
 # IDEs and editors
-/.idea
 .project
 .classpath
 .c9/
@@ -34,7 +33,22 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-.data
+#IDE - Jetbrains
+# Default ignored files
+.idea/shelf/
+.idea/workspace.xml
+# Editor-based HTTP Client requests
+.idea/httpRequests/
+# Datasource local storage ignored files
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/aws.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/*.iml
+
+
+/.data
 /files
-.env
 /ormconfig.json
+.env

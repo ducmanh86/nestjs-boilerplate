@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16.0-alpine
+    environment:
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+
+  maildev:
+    image: maildev/maildev:latest
+
+  redis:
+    image: redis:7.2.1-alpine
+
+  api:
+    build:
+      context: .
+      dockerfile: e2e.Dockerfile
+    environment:
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
